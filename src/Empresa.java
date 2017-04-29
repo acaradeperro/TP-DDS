@@ -1,14 +1,18 @@
-import java.util.Objects;
-
-public class Empresa {
+class Empresa {
     private String nombre = null;
 
     Empresa(String nombre) {
         this.nombre = nombre;
     }
 
-    public boolean equals(Empresa e) {
-        return Objects.equals(e.getNombre(), this.nombre);
+    @Override
+    public int hashCode() {
+        return nombre.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Empresa && nombre.equals(((Empresa) o).getNombre());
     }
 
     String getNombre() {

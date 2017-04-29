@@ -1,4 +1,4 @@
-public class Cuenta {
+class Cuenta {
     private String nombre = null;
     private float valor = 0;
 
@@ -7,11 +7,11 @@ public class Cuenta {
         this.valor = valor;
     }
 
-    public String getNombre() {
+    String getNombre() {
         return nombre;
     }
 
-    public float getValor() {
+    float getValor() {
         return valor;
     }
 }

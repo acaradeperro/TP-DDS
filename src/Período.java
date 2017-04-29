@@ -2,9 +2,8 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
-public class Período {
+class Período {
     private Year año = null;
     private HashMap<Empresa, ArrayList<Cuenta>> cuentasPorEmpresa = new HashMap<>();
 
@@ -12,8 +11,14 @@ public class Período {
         this.año = año;
     }
 
-    public boolean equals(Período p) {
-        return Objects.equals(p.getAño(), this.año);
+    @Override
+    public int hashCode() {
+        return año.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Período && año.equals(((Período) o).getAño());
     }
 
     Year getAño() {
@@ -21,7 +26,8 @@ public class Período {
     }
 
     List<Cuenta> getCuentasPorEmpresa(Empresa e) {
-        return cuentasPorEmpresa.containsKey(e) ? cuentasPorEmpresa.get(e) : cuentasPorEmpresa.put(e, new ArrayList<>());
+        if (!cuentasPorEmpresa.containsKey(e)) cuentasPorEmpresa.put(e, new ArrayList<>());
+        return cuentasPorEmpresa.get(e);
     }
 
     void agregarCuenta(Empresa e, Cuenta c) {

@@ -1,7 +1,6 @@
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,21 +8,22 @@ import java.io.InputStream;
 import java.time.Year;
 import java.util.HashSet;
 
-public class Core {
+class Core {
     public static void main(String[] args) {
         HashSet<Empresa> empresas = new HashSet<>();
         HashSet<Período> períodos = new HashSet<>();
 
-        HSSFWorkbook wb;
+        XSSFWorkbook wb;
         Sheet s = null;
         try {
-            InputStream inp = new FileInputStream("workbook.xls");
-            wb = new HSSFWorkbook(new POIFSFileSystem(inp));
+            InputStream inp = new FileInputStream("workbook.xlsx");
+            wb = new XSSFWorkbook(inp);
             s = wb.getSheetAt(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        assert s != null;
         for (Row r : s) {
             String nombreEmpresa = r.getCell(0).getStringCellValue();
             if (nombreEmpresa.isEmpty()) break;
