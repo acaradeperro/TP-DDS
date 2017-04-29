@@ -25,6 +25,10 @@ class Período {
         return año;
     }
 
+    boolean periodoPerteneceALaEmpresa (Empresa e){
+        return cuentasPorEmpresa.containsKey(e);
+    }
+
     List<Cuenta> getCuentasPorEmpresa(Empresa e) {
         if (!cuentasPorEmpresa.containsKey(e)) cuentasPorEmpresa.put(e, new ArrayList<>());
         return cuentasPorEmpresa.get(e);
