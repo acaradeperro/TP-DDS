@@ -6,17 +6,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Year;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 class Core {
-    HashSet<Empresa> empresas = new HashSet<>();
-    HashSet<Período> períodos = new HashSet<>();
+    private HashSet<Empresa> empresas = new HashSet<>();
+    private HashSet<Período> períodos = new HashSet<>();
 
-    public void main(String[] args) {
-        cargarDatos("workbook.xlsx"); //indicar ruta de archivo
+    public static void main(String[] args) {
+        Core c = new Core();
+        c.cargarDatos("workbook.xlsx");
     }
 
-    public void cargarDatos(String path) {
+    private void cargarDatos(String path) {
         XSSFWorkbook wb;
         Sheet s = null;
         try {
@@ -55,7 +58,7 @@ class Core {
     }
 
     public List<Year> obtenerAnios(Empresa empresa) {
-        List<Year> listaAnios = new ArrayList<Year>();
+        List<Year> listaAnios = new ArrayList<>();
         for (Período dato : períodos) {
             if (dato.periodoPerteneceALaEmpresa(empresa)) {
                 listaAnios.add(dato.getAño());
@@ -65,7 +68,7 @@ class Core {
     }
 
     public List<String> obtenerEmpresas() {
-        List<String> listaEmpresas = new ArrayList<String>();
+        List<String> listaEmpresas = new ArrayList<>();
         for (Empresa dato : empresas) {
             listaEmpresas.add(dato.getNombre());
         }
