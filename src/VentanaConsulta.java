@@ -70,7 +70,7 @@ public class VentanaConsulta extends Application{
         );
 
         cbEmpresas.setOnAction(e->{
-            listaAnios = core.obtenerAnios(cbEmpresas.getValue()).stream().map( n ->n.toString()).collect(Collectors.toList());
+            listaAnios = core.obtenerAnios(obtenerEmpresa(listaEmpresas, cbEmpresas.getValue())).stream().map( n ->n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0,cbPeriodo.getItems().size());
             cbCuentas.getItems().remove(0,cbCuentas.getItems().size());
 
@@ -81,7 +81,7 @@ public class VentanaConsulta extends Application{
 
 
         cbPeriodo.setOnAction(e-> {
-                    listaCuentas = core.obtenerDatos(cbPeriodo.getValue(),cbEmpresas.getValue());
+                    listaCuentas = core.obtenerDatos(stringToYear(cbPeriodo.getValue()),obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
                     cbCuentas.getItems().addAll(
                             listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
                 }
@@ -119,7 +119,7 @@ public class VentanaConsulta extends Application{
             lEmpresa.setText("Empresa: ");
             lNombreEmpresa.setText(cbEmpresas.getValue());
             lCuentaEmpresa.setText(cbCuentas.getValue()+":");
-            lValor.setText(String.valueOf(filtroCuenta(listaCuentas, cbCuentas.getValue()).getValor()));
+            lValor.setText(String.valueOf(obtenerCuenta(listaCuentas, cbCuentas.getValue()).getValor()));
 
         });
 
@@ -127,7 +127,7 @@ public class VentanaConsulta extends Application{
 
     }
 
-    Cuenta filtroCuenta(List<Cuenta> cuentas, String nombre){
+    Cuenta obtenerCuenta(List<Cuenta> cuentas, String nombre){
         Cuenta cuentaRetorno = new Cuenta(null, 0);
         for(int i = 0;i<cuentas.size();i++){
             if(cuentas.get(i).getNombre().equals(nombre)){
@@ -138,4 +138,20 @@ public class VentanaConsulta extends Application{
         return cuentaRetorno;
     }
 
+    Year stringToYear(String anio){
+        Year i;
+        i = Year.of(Integer.parseInt(anio));
+        return i;
+    }
+
+    Empresa obtenerEmpresa(List<Empresa> empresas, String nombre){
+        Empresa empresaRetorno = new Empresa(null);
+        for(int i = 0;i<empresas.size();i++){
+            if(empresas.get(i).getNombre().equals(nombre)){
+
+                empresaRetorno = empresas.get(i);
+            }
+        }
+        return empresaRetorno;
+    }
 }
