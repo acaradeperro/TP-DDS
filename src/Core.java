@@ -74,4 +74,12 @@ class Core {
         }
         return listaEmpresas;
     }
+
+    public List<Empresa> obtenerEmpresas2(){
+        List<Empresa> listaEmpresas = new ArrayList<>();
+        for(Empresa dato: empresas){
+            listaEmpresas.add(dato);
+        }
+        return listaEmpresas;
+    }
 }

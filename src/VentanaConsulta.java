@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -11,24 +13,21 @@ import java.time.Year;
 import java.util.stream.Collectors;
 
 
-public class VentanaConsulta extends Application{
+public class VentanaConsulta extends Application {
     Stage window;
     Scene scene;
-
 
     ComboBox<String> cbEmpresas= new ComboBox<>();;
     ComboBox<String> cbCuentas= new ComboBox<>();
     ComboBox<String> cbPeriodo= new ComboBox<>();
 
 
-
-    boolean consulta = false;
     Label lEmpresa = new Label();
     Label lCuentaEmpresa = new Label();
     Label lNombreEmpresa = new Label();
     Label lValor = new Label();
 
-    List<String> listaEmpresas = new ArrayList<>();
+    List<Empresa> listaEmpresas = new ArrayList<>();
     List<String> listaAnios = new ArrayList<>();
     List<Cuenta> listaCuentas = new ArrayList<>();
 
@@ -50,10 +49,10 @@ public class VentanaConsulta extends Application{
 
         core = new Core();
 
-        listaEmpresas = core.obtenerEmpresas();
+        listaEmpresas = core.obtenerEmpresas2();
 
         window = primaryStage;
-        window.setTitle("Consulta por empresa y periodo");
+        window.setTitle("Consulta");
         scene = new Scene(new Group(), 200, 225);
 
 
@@ -66,7 +65,7 @@ public class VentanaConsulta extends Application{
 
 
         cbEmpresas.getItems().addAll(
-                listaEmpresas
+                listaEmpresas.stream().map( n ->n.getNombre()).collect(Collectors.toList())
         );
 
         cbEmpresas.setOnAction(e->{
@@ -81,7 +80,7 @@ public class VentanaConsulta extends Application{
 
 
         cbPeriodo.setOnAction(e-> {
-                    listaCuentas = core.obtenerDatos(stringToYear(cbPeriodo.getValue()),obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
+                    listaCuentas = core.obtenerDatos(stringToYear(cbPeriodo.getValue()), obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
                     cbCuentas.getItems().addAll(
                             listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
                 }
@@ -96,6 +95,7 @@ public class VentanaConsulta extends Application{
 
         grid.add(new Label("Cuenta: "), 0, 2);
         grid.add(cbCuentas, 1, 2);
+
 
         grid.add(boton, 0, 4);
         grid.add(volver,1,4);
@@ -123,7 +123,17 @@ public class VentanaConsulta extends Application{
 
         });
 
+        volver.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Stage stage = new Stage();
+                VentanaMenuPrincipal  vmp= new VentanaMenuPrincipal();
+                vmp.start(stage);
+                stage.show();
+                primaryStage.close();
+            }
 
+        });
 
     }
 
