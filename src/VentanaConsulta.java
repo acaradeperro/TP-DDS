@@ -49,7 +49,7 @@ public class VentanaConsulta extends Application {
 
         core = new Core();
 
-        listaEmpresas = core.obtenerEmpresas2();
+        listaEmpresas = core.obtenerEmpresas();
 
         window = primaryStage;
         window.setTitle("Consulta");
