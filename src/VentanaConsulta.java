@@ -80,7 +80,7 @@ public class VentanaConsulta extends Application {
 
 
         cbPeriodo.setOnAction(e-> {
-                    listaCuentas = core.obtenerDatos(stringToYear(cbPeriodo.getValue()), obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
+                    listaCuentas = core.obtenerCuentas(stringToYear(cbPeriodo.getValue()), obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
                     cbCuentas.getItems().addAll(
                             listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
                 }

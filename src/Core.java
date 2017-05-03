@@ -48,38 +48,28 @@ class Core {
         }
     }
 
-    public List<Cuenta> obtenerDatos(Year anio, Empresa empresa) {
-        for (Período dato : períodos) {
-            if (dato.getAño() == anio) {
-                return dato.getCuentasPorEmpresa(empresa);
+    List<Cuenta> obtenerCuentas(Year anio, Empresa empresa) {
+        for (Período p : períodos) {
+            if (p.getAño() == anio) {
+                return p.getCuentasPorEmpresa(empresa);
             }
         }
         return null;
     }
 
-    public List<Year> obtenerAnios(Empresa empresa) {
+    List<Year> obtenerAnios(Empresa empresa) {
         List<Year> listaAnios = new ArrayList<>();
-        for (Período dato : períodos) {
-            if (dato.periodoPerteneceALaEmpresa(empresa)) {
-                listaAnios.add(dato.getAño());
+        for (Período p : períodos) {
+            if (p.periodoPerteneceALaEmpresa(empresa)) {
+                listaAnios.add(p.getAño());
             }
         }
         return listaAnios;
     }
 
-    public List<String> obtenerEmpresas() {
-        List<String> listaEmpresas = new ArrayList<>();
-        for (Empresa dato : empresas) {
-            listaEmpresas.add(dato.getNombre());
-        }
-        return listaEmpresas;
-    }
-
-    public List<Empresa> obtenerEmpresas2(){
+    public List<Empresa> obtenerEmpresas() {
         List<Empresa> listaEmpresas = new ArrayList<>();
-        for(Empresa dato: empresas){
-            listaEmpresas.add(dato);
-        }
+        listaEmpresas.addAll(empresas);
         return listaEmpresas;
     }
 }
