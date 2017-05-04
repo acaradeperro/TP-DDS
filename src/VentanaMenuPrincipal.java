@@ -27,6 +27,7 @@ public class VentanaMenuPrincipal extends Application{
     @Override
     public void start(Stage primaryStage) {
 
+
         elCore = new Core();
         window = primaryStage;
         window.setTitle("Sistema de Apoyo a Decisiones");
@@ -49,6 +50,7 @@ public class VentanaMenuPrincipal extends Application{
                 primaryStage.hide();
             }
         });
+
 
         btnConsultasXPeriodoEmpresa.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {

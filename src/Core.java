@@ -19,7 +19,7 @@ class Core {
 
     }
 
-    public void cargarDatos(File archivo) {
+    void cargarDatos(File archivo) {
         XSSFWorkbook wb;
         Sheet s = null;
         try {
@@ -34,17 +34,36 @@ class Core {
         for (Row r : s) {
             String nombreEmpresa = r.getCell(0).getStringCellValue();
             if (nombreEmpresa.isEmpty()) break;
-            Year período = Year.of((int) r.getCell(1).getNumericCellValue());
+            Year año = Year.of((int) r.getCell(1).getNumericCellValue());
             String nombreCuenta = r.getCell(2).getStringCellValue();
             float valorCuenta = (float) r.getCell(3).getNumericCellValue();
 
-            Empresa e = new Empresa(nombreEmpresa);
-            Período p = new Período(período);
-            Cuenta c = new Cuenta(nombreCuenta, valorCuenta);
+            Empresa ne = null;
+            for (Empresa e : empresas) {
+                if (e.getNombre().equals(nombreEmpresa)) {
+                    ne = e;
+                    break;
+                }
+            }
+            if (ne == null) {
+                ne = new Empresa(nombreEmpresa);
+                empresas.add(ne);
+            }
 
-            empresas.add(e);
-            períodos.add(p);
-            p.agregarCuenta(e, c);
+            Período np = null;
+            for (Período p : períodos) {
+                if (p.getAño().equals(año)) {
+                    np = p;
+                    break;
+                }
+            }
+            if (np == null) {
+                np = new Período(año);
+                períodos.add(np);
+            }
+
+            Cuenta c = new Cuenta(nombreCuenta, valorCuenta);
+            np.agregarCuenta(ne, c);
         }
     }
 

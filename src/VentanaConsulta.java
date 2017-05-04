@@ -55,7 +55,9 @@ public class VentanaConsulta extends Application {
         grid.setVgap(4);
         grid.setHgap(10);
         grid.setPadding(new Insets(5, 5, 5, 5));
-
+        cbCuentas.setDisable(true);
+        cbPeriodo.setDisable(true);
+        boton.setDisable(true);
         listaEmpresas = elCore.obtenerEmpresas();
 
         window = primaryStage;
@@ -76,9 +78,11 @@ public class VentanaConsulta extends Application {
         );
 
         cbEmpresas.setOnAction(e -> {
+            boton.setDisable(true);
             listaAnios = elCore.obtenerAnios(obtenerEmpresa(listaEmpresas, cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0, cbPeriodo.getItems().size());
             cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
+            cbPeriodo.setDisable(false);
 
             cbPeriodo.getItems().addAll(
                     listaAnios);
@@ -91,9 +95,13 @@ public class VentanaConsulta extends Application {
                     cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
                     cbCuentas.getItems().addAll(
                             listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
+                    cbCuentas.setDisable(false);
                 }
+
+
         );
 
+        cbCuentas.setOnAction(e -> boton.setDisable(false));
 
         grid.add(new Label("Empresa: "), 0, 0);
         grid.add(cbEmpresas, 1, 0);
