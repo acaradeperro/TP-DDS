@@ -2,6 +2,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,15 +16,14 @@ class Core {
     private HashSet<Período> períodos = new HashSet<>();
 
     public static void main(String[] args) {
-        Core c = new Core();
-        c.cargarDatos("workbook.xlsx");
+
     }
 
-    private void cargarDatos(String path) {
+    public void cargarDatos(File archivo) {
         XSSFWorkbook wb;
         Sheet s = null;
         try {
-            InputStream inp = new FileInputStream(path);
+            InputStream inp = new FileInputStream(archivo);
             wb = new XSSFWorkbook(inp);
             s = wb.getSheetAt(0);
         } catch (IOException e) {
@@ -50,7 +50,7 @@ class Core {
 
     List<Cuenta> obtenerCuentas(Year anio, Empresa empresa) {
         for (Período p : períodos) {
-            if (p.getAño() == anio) {
+            if (p.getAño().equals(anio)) {
                 return p.getCuentasPorEmpresa(empresa);
             }
         }
