@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 
 
 public class VentanaMenuPrincipal extends Application{
@@ -29,6 +30,12 @@ public class VentanaMenuPrincipal extends Application{
 
 
         elCore = new Core();
+        try {
+            elCore.conectarBd();
+            elCore.insertPrueba();
+        }
+        catch(Exception ex){System.out.println("Error: unable to load driver class!"); System.exit(1);}
+
         window = primaryStage;
         window.setTitle("Sistema de Apoyo a Decisiones");
         scene = new Scene(new Group(), 350, 100);

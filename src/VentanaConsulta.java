@@ -22,7 +22,7 @@ public class VentanaConsulta extends Application {
     Scene scene;
 
     ComboBox<String> cbEmpresas = new ComboBox<>();
-    ;
+
     ComboBox<String> cbCuentas = new ComboBox<>();
     ComboBox<String> cbPeriodo = new ComboBox<>();
 
@@ -91,7 +91,8 @@ public class VentanaConsulta extends Application {
 
 
         cbPeriodo.setOnAction(e -> {
-                    listaCuentas = elCore.obtenerCuentas(stringToYear(cbPeriodo.getValue()), obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
+                    //listaCuentas = elCore.obtenerCuentas(stringToInt(cbPeriodo.getValue()), obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
+                    listaCuentas = elCore.obtenerCuentas(stringToInt(cbPeriodo.getValue()), obtenerEmpresa(listaEmpresas, cbEmpresas.getValue()));
                     cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
                     cbCuentas.getItems().addAll(
                             listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
@@ -161,10 +162,10 @@ public class VentanaConsulta extends Application {
         return cuentaRetorno;
     }
 
-    Year stringToYear(String anio) {
-        Year i;
-        i = Year.of(Integer.parseInt(anio));
-        return i;
+    int stringToInt(String anio) {
+
+        return Integer.valueOf(anio);
+
     }
 
     Empresa obtenerEmpresa(List<Empresa> empresas, String nombre) {

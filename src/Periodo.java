@@ -3,26 +3,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-class Período {
-    private Year año = null;
+class Periodo {
+    private int anio = 0;
     private HashMap<Empresa, ArrayList<Cuenta>> cuentasPorEmpresa = new HashMap<>();
 
-    Período(Year año) {
-        this.año = año;
+    Periodo(int año) {
+        this.anio = año;
     }
 
-    @Override
-    public int hashCode() {
-        return año.hashCode();
-    }
+   /* @Override
+    /*public int hashCode() {
+        return anio.hashCode();
+    }*/
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Período && año.equals(((Período) o).getAño());
+        return o instanceof Periodo && anio == ((Periodo) o).getAnio();
     }
 
-    Year getAño() {
-        return año;
+    int getAnio() {
+        return anio;
     }
 
     boolean periodoPerteneceALaEmpresa (Empresa e){

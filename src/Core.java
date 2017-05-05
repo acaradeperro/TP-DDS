@@ -2,21 +2,40 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+
 class Core {
     private HashSet<Empresa> empresas = new HashSet<>();
-    private HashSet<Período> períodos = new HashSet<>();
+    private HashSet<Periodo> periodos = new HashSet<>();
+    Connection con;
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
+    }
+
+    void conectarBd() throws Exception {
+       //     Class.forName("com.mysql.jdbc.Driver");
+        //    new com.mysql.jdbc.Driver();
+            Class.forName(com.mysql.jdbc.Driver.class.getName());
+            con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/bd?serverTimezone=UTC", "root", "1234");
+    }
+
+    void insertPrueba() throws SQLException {
+        Statement stmt = con.createStatement();
+        stmt.executeUpdate("Insert into Empresas (nombre) values ('colo srl')");
     }
 
     void cargarDatos(File archivo) {
@@ -34,7 +53,7 @@ class Core {
         for (Row r : s) {
             String nombreEmpresa = r.getCell(0).getStringCellValue();
             if (nombreEmpresa.isEmpty()) break;
-            Year año = Year.of((int) r.getCell(1).getNumericCellValue());
+            int anio = (int) r.getCell(1).getNumericCellValue();
             String nombreCuenta = r.getCell(2).getStringCellValue();
             float valorCuenta = (float) r.getCell(3).getNumericCellValue();
 
@@ -50,16 +69,16 @@ class Core {
                 empresas.add(ne);
             }
 
-            Período np = null;
-            for (Período p : períodos) {
-                if (p.getAño().equals(año)) {
+            Periodo np = null;
+            for (Periodo p : periodos) {
+                if (p.getAnio() == anio) {
                     np = p;
                     break;
                 }
             }
             if (np == null) {
-                np = new Período(año);
-                períodos.add(np);
+                np = new Periodo(anio);
+                periodos.add(np);
             }
 
             Cuenta c = new Cuenta(nombreCuenta, valorCuenta);
@@ -67,20 +86,20 @@ class Core {
         }
     }
 
-    List<Cuenta> obtenerCuentas(Year anio, Empresa empresa) {
-        for (Período p : períodos) {
-            if (p.getAño().equals(anio)) {
+    List<Cuenta> obtenerCuentas(int anio, Empresa empresa) {
+        for (Periodo p : periodos) {
+            if (p.getAnio() == anio) {
                 return p.getCuentasPorEmpresa(empresa);
             }
         }
         return null;
     }
 
-    List<Year> obtenerAnios(Empresa empresa) {
-        List<Year> listaAnios = new ArrayList<>();
-        for (Período p : períodos) {
+    List<Integer> obtenerAnios(Empresa empresa) {
+        List<Integer> listaAnios = new ArrayList<>();
+        for (Periodo p : periodos) {
             if (p.periodoPerteneceALaEmpresa(empresa)) {
-                listaAnios.add(p.getAño());
+                listaAnios.add(p.getAnio());
             }
         }
         return listaAnios;
@@ -91,4 +110,6 @@ class Core {
         listaEmpresas.addAll(empresas);
         return listaEmpresas;
     }
+
+
 }
