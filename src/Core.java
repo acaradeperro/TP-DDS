@@ -24,22 +24,24 @@ class Core {
 
     public void main(String[] args) {
 
+
+        try {
+            conectarBd();
+        }
+        catch(Exception ex){System.out.println("Error: unable to load driver class!"); System.exit(1);}
+
+
     }
 
     void conectarBd() throws Exception {
-       //     Class.forName("com.mysql.jdbc.Driver");
-        //    new com.mysql.jdbc.Driver();
             Class.forName(com.mysql.jdbc.Driver.class.getName());
             con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/bd?serverTimezone=UTC", "root", "1234");
     }
 
-    void insertPrueba() throws SQLException {
-        Statement stmt = con.createStatement();
-        stmt.executeUpdate("Insert into Empresas (nombre) values ('colo srl')");
-    }
 
     void cargarDatos(File archivo) {
         XSSFWorkbook wb;
+        int idEmpresa = -1;
         Sheet s = null;
         try {
             InputStream inp = new FileInputStream(archivo);
@@ -56,33 +58,38 @@ class Core {
             int anio = (int) r.getCell(1).getNumericCellValue();
             String nombreCuenta = r.getCell(2).getStringCellValue();
             float valorCuenta = (float) r.getCell(3).getNumericCellValue();
+            int idCuenta;
 
-            Empresa ne = null;
+            Empresa empresa = null;
             for (Empresa e : empresas) {
                 if (e.getNombre().equals(nombreEmpresa)) {
-                    ne = e;
+                    empresa = e;
                     break;
                 }
             }
-            if (ne == null) {
-                ne = new Empresa(nombreEmpresa);
-                empresas.add(ne);
+            if (empresa == null) {
+                empresa = new Empresa(nombreEmpresa);
+                empresas.add(empresa);
+                idEmpresa = insertarEmpresa(empresa);
             }
 
-            Periodo np = null;
+
+            Periodo periodo = null;
             for (Periodo p : periodos) {
                 if (p.getAnio() == anio) {
-                    np = p;
+                    periodo = p;
                     break;
                 }
             }
-            if (np == null) {
-                np = new Periodo(anio);
-                periodos.add(np);
+            if (periodo == null) {
+                periodo = new Periodo(anio);
+                periodos.add(periodo);
             }
 
-            Cuenta c = new Cuenta(nombreCuenta, valorCuenta);
-            np.agregarCuenta(ne, c);
+            Cuenta cuenta = new Cuenta(nombreCuenta, valorCuenta);
+            periodo.agregarCuenta(empresa, cuenta);
+            idCuenta = insertarCuenta(cuenta);
+            insertarPeriodo(periodo,idCuenta,idEmpresa);
         }
     }
 
@@ -109,6 +116,54 @@ class Core {
         List<Empresa> listaEmpresas = new ArrayList<>();
         listaEmpresas.addAll(empresas);
         return listaEmpresas;
+    }
+
+    int insertarEmpresa(Empresa empresa){
+        int id = -1;
+        try {
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("Insert into Empresas (nombre) values ('" + empresa.getNombre() + "')",Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()){
+                id=rs.getInt(1);
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("Got an exception!");
+            System.err.println(e.getMessage());
+        }
+        return id;
+    }
+
+    void insertarPeriodo(Periodo periodo, int idCuenta, int idEmpresa){
+        try {
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("Insert into Periodos (anio,idEmpresa,idCuenta) values ('" + periodo.getAnio() + "',"+idEmpresa+","+idCuenta+")");
+        }
+        catch (Exception e)
+        {
+            System.err.println("Got an exception!");
+            System.err.println(e.getMessage());
+        }
+    }
+    int insertarCuenta(Cuenta cuenta){
+        int id = -1;
+        try {
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate("Insert into Cuentas (nombre,valor) values ('" + cuenta.getNombre() + "','"+cuenta.getValor()+"')",Statement.RETURN_GENERATED_KEYS);
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()){
+                id=rs.getInt(1);
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("Got an exception!");
+            System.err.println(e.getMessage());
+        }
+        return id;
     }
 
 
