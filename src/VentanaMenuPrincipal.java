@@ -28,13 +28,8 @@ public class VentanaMenuPrincipal extends Application{
     @Override
     public void start(Stage primaryStage) {
 
-
         elCore = new Core();
-        try {
-            elCore.conectarBd();
-            elCore.insertPrueba();
-        }
-        catch(Exception ex){System.out.println("Error: unable to load driver class!"); System.exit(1);}
+        elCore.main(null); //otra forma mas linda de hacer esto?
 
         window = primaryStage;
         window.setTitle("Sistema de Apoyo a Decisiones");
