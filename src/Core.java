@@ -73,6 +73,9 @@ class Core {
                 idEmpresa = insertarEmpresa(empresa);
             }
 
+            if(idEmpresa == -1){
+                idEmpresa = traerIdEmpresa(nombreEmpresa);
+            }
 
             Periodo periodo = null;
             for (Periodo p : periodos) {
@@ -166,5 +169,23 @@ class Core {
         return id;
     }
 
+    int traerIdEmpresa(String nombre){
+        int idEmpresa = -1;
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("select id from empresas where nombre = ('" + nombre + "')");
+            while (rs.next()) {
+                idEmpresa = rs.getInt("id");
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("Got an exception!");
+            System.err.println(e.getMessage());
+        }
+
+        return idEmpresa;
+
+    }
 
 }
