@@ -4,7 +4,7 @@ import model.*;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
+import com.fathzer.soft.javaluator.DoubleEvaluator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,10 +27,10 @@ public class IndicadorController {
         indicador.insertar();
     }
 
-    public static int calcularIndicador(String nombreEmpresa, int anio, String ecuacion){
+    public static Double calcularIndicador(String nombreEmpresa, int anio, String ecuacion){
         int index = 0;
         String ecuacionNumerica = "";
-        String[] parts = ecuacion.split("[-+*]");
+        String[] parts = ecuacion.split("[-+/*]");
         for(int i = 0; i < parts.length; i++){
             ecuacionNumerica += traerNumeroParaIndicador(parts[i],nombreEmpresa, anio);
             index += parts[i].length();
@@ -42,12 +42,13 @@ public class IndicadorController {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         try {
-            return (int) engine.eval(ecuacionNumerica);
+
+            return (Double) new DoubleEvaluator().evaluate(ecuacionNumerica);
         }
         catch (Exception e ){
 
         }
-        return 0;
+        return 0.0;
     }
 
     static String traerNumeroParaIndicador(String valor, String nombreEmpresa, int anio) {
@@ -89,7 +90,7 @@ public class IndicadorController {
                 System.err.println("Got an exception!");
                 System.err.println(e.getMessage());
             }
-            return Integer.toString(calcularIndicador(nombreEmpresa, anio, indicador));
+            return Double.toString(calcularIndicador(nombreEmpresa, anio, indicador));
         }
 
     }
