@@ -1,3 +1,4 @@
+import controller.ApplicationController;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,15 +11,11 @@ import javafx.scene.layout.GridPane;
 
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-
 
 public class VentanaMenuPrincipal extends Application{
 
     Stage window;
     Scene scene;
-    Core elCore;
-
 
     public static void main(String[] args) {
         launch(args);
@@ -27,9 +24,7 @@ public class VentanaMenuPrincipal extends Application{
 
     @Override
     public void start(Stage primaryStage) {
-
-        elCore = new Core();
-        elCore.main(null); //otra forma mas linda de hacer esto?
+        ApplicationController.main(null); //otra forma mas linda de hacer esto?
 
         window = primaryStage;
         window.setTitle("Sistema de Apoyo a Decisiones");
@@ -48,7 +43,7 @@ public class VentanaMenuPrincipal extends Application{
         btnCargaArchivo.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Stage stage = new Stage();
-                VentanaFileChooser  vfc= new VentanaFileChooser(primaryStage,elCore);
+                VentanaFileChooser  vfc= new VentanaFileChooser(primaryStage);
                 vfc.start(stage);
                 stage.show();
                 primaryStage.hide();
@@ -59,7 +54,7 @@ public class VentanaMenuPrincipal extends Application{
         btnConsultasXPeriodoEmpresa.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Stage stage = new Stage();
-                VentanaConsulta vc = new VentanaConsulta(primaryStage,elCore);
+                VentanaConsulta vc = new VentanaConsulta(primaryStage);
                 try {
                     vc.start(stage);
                 }catch(Exception ex){}
@@ -70,7 +65,7 @@ public class VentanaMenuPrincipal extends Application{
         btnCargarIndicadores.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Stage stage = new Stage();
-                VentanaCargarIndicadores vci = new VentanaCargarIndicadores(primaryStage,elCore);
+                VentanaCargarIndicadores vci = new VentanaCargarIndicadores(primaryStage);
                 try {
                     vci.start(stage);
                 }catch(Exception ex){}
@@ -81,7 +76,7 @@ public class VentanaMenuPrincipal extends Application{
         btnConsultarIndicadores.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 Stage stage = new Stage();
-                VentanaConsultarIndicadores vci = new VentanaConsultarIndicadores(primaryStage,elCore);
+                VentanaConsultarIndicadores vci = new VentanaConsultarIndicadores(primaryStage);
                 try {
                     vci.start(stage);
                 }catch(Exception ex){}

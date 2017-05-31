@@ -1,3 +1,5 @@
+/*
+import model.*;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,7 +37,7 @@ class Core {
 
     void conectarBd() throws Exception {
             Class.forName(com.mysql.jdbc.Driver.class.getName());
-            con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/bd?serverTimezone=UTC", "root", "1234");
+            con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/bd?serverTimezone=UTC", "root", "root");
     }
 
 
@@ -98,19 +100,6 @@ class Core {
         }
     }
 
-    boolean validar(Cuenta cuenta, int idEmpresa, Periodo periodo){
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            rs = stmt.executeQuery("SELECT * FROM periodos inner join cuentas on periodos.idCuenta = cuentas.id where anio = " + periodo.getAnio() +
-                                        " and idEmpresa = " + idEmpresa + " and cuentas.nombre = '" + cuenta.getNombre() + "'");
-            return !rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     List<Cuenta> obtenerCuentas(int anio, Empresa empresa) {
         for (Periodo p : periodos) {
             if (p.getAnio() == anio) {
@@ -120,24 +109,7 @@ class Core {
         return null;
     }
 
-    List<Cuenta> fetchAllCuentas(int anio, Empresa empresa){
-        List<Cuenta> listaCuentas = new ArrayList<Cuenta>();
-        Cuenta cuenta = null;
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            rs = stmt.executeQuery("SELECT * FROM cuentas inner join periodos on cuentas.id = periodos.idCuenta inner join empresas on periodos.idEmpresa = empresas.id " +
-                                        "where empresas.nombre = '" + empresa.getNombre() + "' and periodos.anio = " + anio);
-            while(rs.next()){
-                cuenta = new Cuenta(rs.getString("nombre"),rs.getFloat("valor"));
-                listaCuentas.add(cuenta);
-            }
-            return listaCuentas;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 
     List<Integer> obtenerAnios(Empresa empresa) {
         List<Integer> listaAnios = new ArrayList<>();
@@ -149,75 +121,13 @@ class Core {
         return listaAnios;
     }
 
-    List<Integer> fetchAllAnios(Empresa empresa){
-        List<Integer> listaAnios = new ArrayList<>();
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            rs = stmt.executeQuery("SELECT * FROM periodos inner join empresas on periodos.idEmpresa = empresas.id where nombre = '" + empresa.getNombre() + "'");
-            while(rs.next()){
-                listaAnios.add(rs.getInt("anio"));
-            }
-            return listaAnios;
-    } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<Empresa> obtenerEmpresas() {
+     public List<Empresa> obtenerEmpresas() {
         List<Empresa> listaEmpresas = new ArrayList<>();
         listaEmpresas.addAll(empresas);
         return listaEmpresas;
     }
 
-    int insertarEmpresa(Empresa empresa){
-        int id = -1;
-        try {
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate("Insert into Empresas (nombre) values ('" + empresa.getNombre() + "')",Statement.RETURN_GENERATED_KEYS);
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()){
-                id=rs.getInt(1);
-            }
-        }
-        catch (Exception e)
-        {
-            System.err.println("Got an exception!");
-            System.err.println(e.getMessage());
-        }
-        return id;
-    }
 
-    void insertarPeriodo(Periodo periodo, int idCuenta, int idEmpresa){
-        try {
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate("Insert into Periodos (anio,idEmpresa,idCuenta) values ('" + periodo.getAnio() + "',"+idEmpresa+","+idCuenta+")");
-        }
-        catch (Exception e)
-        {
-            System.err.println("Got an exception!");
-            System.err.println(e.getMessage());
-        }
-    }
-    int insertarCuenta(Cuenta cuenta){
-        int id = -1;
-        try {
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate("Insert into Cuentas (nombre,valor) values ('" + cuenta.getNombre() + "','"+cuenta.getValor()+"')",Statement.RETURN_GENERATED_KEYS);
-
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()){
-                id=rs.getInt(1);
-            }
-        }
-        catch (Exception e)
-        {
-            System.err.println("Got an exception!");
-            System.err.println(e.getMessage());
-        }
-        return id;
-    }
 
     int traerIdEmpresa(String nombre){
         int idEmpresa = -1;
@@ -238,24 +148,6 @@ class Core {
 
     }
 
-    public List<Empresa> fetchAllEmpresas(){
-        Empresa empresa = null;
-        List<Empresa> empresas = new ArrayList<Empresa>();
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs;
-            rs = stmt.executeQuery("SELECT * FROM empresas");
-            while ( rs.next() ) {
-                empresa = new Empresa(rs.getString("nombre"));
-                empresas.add(empresa);
-            }
-            //con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return empresas;
-    }
 
     public List<Indicador> fetchAllIndicadores(){
         Indicador indicador = null;
@@ -275,11 +167,11 @@ class Core {
 
         return indicadores;
     }
-
     public void insertarIndicador(String nombre, String ecuacion){
         try {
             Statement stmt = con.createStatement();
-            stmt.executeUpdate("Insert into Indicadores (nombre,ecuacion) values ('" + nombre + "','"+ecuacion+"')");
+            stmt.executeUpdate("Insert into Indicadores (nombre,ecuacion) values ('" + nombre + "','"+
+                    ecuacion.replaceAll("\\s","")+"')");
         }
         catch (Exception e)
         {
@@ -287,10 +179,11 @@ class Core {
             System.err.println(e.getMessage());
         }
     }
-    public int calcularIndicador(String nombreEmpresa, int anio, String ecuacion){
+    public float calcularIndicador(String nombreEmpresa, int anio, String ecuacion){
         int index = 0;
         String ecuacionNumerica = "";
-        String[] parts = ecuacion.split("[-+*/]");
+        String[] parts = ecuacion.split("[-+*//*
+]");
         for(int i = 0; i < parts.length; i++){
             ecuacionNumerica += traerNumeroParaIndicador(parts[i],nombreEmpresa, anio);
             index += parts[i].length();
@@ -302,7 +195,7 @@ class Core {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         try {
-            return (int) engine.eval(ecuacionNumerica);
+            return (float) engine.eval(ecuacionNumerica);
         }
         catch (Exception e ){
 
@@ -349,7 +242,7 @@ class Core {
                 System.err.println("Got an exception!");
                 System.err.println(e.getMessage());
             }
-           return Integer.toString(calcularIndicador(nombreEmpresa, anio, indicador));
+           return Float.toString(calcularIndicador(nombreEmpresa, anio, indicador));
         }
 
     }
@@ -366,3 +259,4 @@ class Core {
         return true;
     }
 }
+*/

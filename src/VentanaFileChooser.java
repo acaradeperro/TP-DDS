@@ -1,3 +1,4 @@
+import controller.CuentaController;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,12 +18,11 @@ import static javafx.application.Application.launch;
 
 public class VentanaFileChooser extends Application {
     private Stage ventanaMenu;
-    private Core elCore;
     File file;
     Stage window;
     Scene scene;
 
-    VentanaFileChooser(Stage ventanaRecibida, Core miCore){this.ventanaMenu = ventanaRecibida;this.elCore = miCore;}
+    VentanaFileChooser(Stage ventanaRecibida){this.ventanaMenu = ventanaRecibida;}
 
     public static void main(String[] args) {
         launch(args);
@@ -64,7 +64,7 @@ public class VentanaFileChooser extends Application {
         btnConfirmar.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                elCore.cargarDatos(file);
+                CuentaController.cargarDatos(file);
             }
         });
 

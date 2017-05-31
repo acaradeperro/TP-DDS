@@ -1,3 +1,5 @@
+import controller.CuentaController;
+import controller.EmpresaController;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,17 +9,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import model.Cuenta;
+import model.Empresa;
+import model.Periodo;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.time.Year;
 import java.util.stream.Collectors;
 
 
 public class VentanaConsulta extends Application {
 
     private Stage ventanaMenu;
-    private Core elCore;
     Stage window;
     Scene scene;
 
@@ -36,9 +39,8 @@ public class VentanaConsulta extends Application {
     List<String> listaAnios = new ArrayList<>();
     List<Cuenta> listaCuentas = new ArrayList<>();
 
-    VentanaConsulta(Stage ventanaRecibida, Core miCore) {
+    VentanaConsulta(Stage ventanaRecibida) {
         this.ventanaMenu = ventanaRecibida;
-        this.elCore = miCore;
     }
 
     public static void main(String[] args) {
@@ -58,7 +60,7 @@ public class VentanaConsulta extends Application {
         cbCuentas.setDisable(true);
         cbPeriodo.setDisable(true);
         boton.setDisable(true);
-        listaEmpresas = elCore.fetchAllEmpresas();
+        listaEmpresas = Empresa.fetchAllEmpresas();
 
         window = primaryStage;
         window.setTitle("Consulta");
@@ -79,7 +81,7 @@ public class VentanaConsulta extends Application {
 
         cbEmpresas.setOnAction(e -> {
             boton.setDisable(true);
-            listaAnios = elCore.fetchAllAnios(obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
+            listaAnios = Periodo.fetchAllAnios(EmpresaController.obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0, cbPeriodo.getItems().size());
             cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
             cbPeriodo.setDisable(false);
@@ -91,7 +93,8 @@ public class VentanaConsulta extends Application {
 
 
         cbPeriodo.setOnAction(e -> {
-                   listaCuentas = elCore.fetchAllCuentas(stringToInt(cbPeriodo.getValue()), obtenerEmpresa(cbEmpresas.getValue()));
+                   listaCuentas = Cuenta.fetchAllCuentas(stringToInt(cbPeriodo.getValue()),
+                           EmpresaController.obtenerEmpresa(cbEmpresas.getValue()));
                     cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
                     cbCuentas.getItems().addAll(
                             listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
@@ -135,7 +138,7 @@ public class VentanaConsulta extends Application {
             lEmpresa.setText("Empresa: ");
             lNombreEmpresa.setText(cbEmpresas.getValue());
             lCuentaEmpresa.setText(cbCuentas.getValue() + ":");
-            lValor.setText(String.valueOf(obtenerCuenta(listaCuentas, cbCuentas.getValue()).getValor()));
+            lValor.setText(String.valueOf(CuentaController.obtenerCuenta(listaCuentas, cbCuentas.getValue()).getValor()));
 
         });
 
@@ -150,16 +153,7 @@ public class VentanaConsulta extends Application {
 
     }
 
-    Cuenta obtenerCuenta(List<Cuenta> cuentas, String nombre) {
-        Cuenta cuentaRetorno = new Cuenta(null, 0);
-        for (int i = 0; i < cuentas.size(); i++) {
-            if (cuentas.get(i).getNombre().equals(nombre)) {
 
-                cuentaRetorno = cuentas.get(i);
-            }
-        }
-        return cuentaRetorno;
-    }
 
     int stringToInt(String anio) {
 
@@ -167,15 +161,5 @@ public class VentanaConsulta extends Application {
 
     }
 
-    Empresa obtenerEmpresa(String nombre) {
-        List<Empresa> empresas = elCore.fetchAllEmpresas();
-        Empresa empresaRetorno = new Empresa(null);
-        for (int i = 0; i < empresas.size(); i++) {
-            if (empresas.get(i).getNombre().equals(nombre)) {
 
-                empresaRetorno = empresas.get(i);
-            }
-        }
-        return empresaRetorno;
-    }
 }

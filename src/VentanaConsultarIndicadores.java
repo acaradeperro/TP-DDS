@@ -1,3 +1,4 @@
+import controller.IndicadorController;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,6 +10,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import model.Empresa;
+import model.Indicador;
+import model.Periodo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +22,6 @@ import java.util.stream.Collectors;
 public class VentanaConsultarIndicadores extends Application {
 
     private Stage ventanaMenu;
-    private Core elCore;
     Stage window;
     Scene scene;
 
@@ -37,9 +40,8 @@ public class VentanaConsultarIndicadores extends Application {
     List<String> listaAnios = new ArrayList<>();
     List<Indicador> listaIndicadores = new ArrayList<>();
 
-    VentanaConsultarIndicadores(Stage ventanaRecibida, Core miCore) {
+    VentanaConsultarIndicadores(Stage ventanaRecibida) {
         this.ventanaMenu = ventanaRecibida;
-        this.elCore = miCore;
     }
 
     public static void main(String[] args) {
@@ -58,8 +60,8 @@ public class VentanaConsultarIndicadores extends Application {
         grid.setPadding(new Insets(5, 5, 5, 5));
         cbPeriodo.setDisable(true);
         boton.setDisable(true);
-        listaIndicadores = elCore.fetchAllIndicadores();
-        listaEmpresas = elCore.fetchAllEmpresas();
+        listaIndicadores = Indicador.fetchAllIndicadores();
+        listaEmpresas = Empresa.fetchAllEmpresas();
 
         window = primaryStage;
         window.setTitle("Consulta");
@@ -84,7 +86,7 @@ public class VentanaConsultarIndicadores extends Application {
 
         cbEmpresas.setOnAction(e -> {
             boton.setDisable(true);
-            listaAnios = elCore.fetchAllAnios(obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
+            listaAnios = Periodo.fetchAllAnios(obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0, cbPeriodo.getItems().size());
             cbPeriodo.setDisable(false);
 
@@ -131,7 +133,7 @@ public class VentanaConsultarIndicadores extends Application {
             lEmpresa.setText("Empresa: ");
             lNombreEmpresa.setText(cbEmpresas.getValue());
             lCuentaEmpresa.setText(cbIndicadores.getValue() + ":");
-            lValor.setText(String.valueOf(elCore.calcularIndicador(cbEmpresas.getValue(),stringToInt(cbPeriodo.getValue()),obtenerIndicador(cbIndicadores.getValue()).getEcuacion())));
+            lValor.setText(String.valueOf(IndicadorController.calcularIndicador(cbEmpresas.getValue(),stringToInt(cbPeriodo.getValue()),obtenerIndicador(cbIndicadores.getValue()).getEcuacion())));
         });
 
         volver.setOnAction(new EventHandler<ActionEvent>() {
@@ -146,7 +148,7 @@ public class VentanaConsultarIndicadores extends Application {
     }
 
     Indicador obtenerIndicador(String nombre) {
-        List<Indicador> indicadores = elCore.fetchAllIndicadores();
+        List<Indicador> indicadores = Indicador.fetchAllIndicadores();
         Indicador indicadorRetorno = new Indicador(null, null);
         for (int i = 0; i < indicadores.size(); i++) {
             if (indicadores.get(i).getNombre().equals(nombre)) {
@@ -164,7 +166,7 @@ public class VentanaConsultarIndicadores extends Application {
     }
 
     Empresa obtenerEmpresa(String nombre) {
-        List<Empresa> empresas = elCore.fetchAllEmpresas();
+        List<Empresa> empresas = Empresa.fetchAllEmpresas();
         Empresa empresaRetorno = new Empresa(null);
         for (int i = 0; i < empresas.size(); i++) {
             if (empresas.get(i).getNombre().equals(nombre)) {

@@ -12,17 +12,19 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.poi.sl.usermodel.TextBox;
 
+import model.*;
+import controller.*;
+
 import java.io.File;
 
 
 public class VentanaCargarIndicadores extends Application {
     private Stage ventanaMenu;
-    private Core elCore;
     File file;
     Stage window;
     Scene scene;
 
-    VentanaCargarIndicadores(Stage ventanaRecibida, Core miCore){this.ventanaMenu = ventanaRecibida;this.elCore = miCore;}
+    VentanaCargarIndicadores(Stage ventanaRecibida){this.ventanaMenu = ventanaRecibida;}
 
     public static void main(String[] args) {
         launch(args);
@@ -48,7 +50,7 @@ public class VentanaCargarIndicadores extends Application {
         btnConfirmar.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                elCore.insertarIndicador(txtNombre.getText(),txtEcuacion.getText());
+                IndicadorController.insertarIndicadorEnBd(txtNombre.getText(),txtEcuacion.getText());
             }
         });
 
