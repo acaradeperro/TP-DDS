@@ -40,6 +40,8 @@ public class VentanaMenuPrincipal extends Application{
 
         Button btnCargaArchivo = new Button("Cargar Archivo");
         Button btnConsultasXPeriodoEmpresa = new Button("Consultar Cuentas");
+        Button btnCargarIndicadores = new Button("Cargar indicadores");
+        Button btnConsultarIndicadores = new Button("Consultar indicadores");
         Button btnCerrar = new Button("Cerrar");
 
 
@@ -65,6 +67,28 @@ public class VentanaMenuPrincipal extends Application{
             }
         });
 
+        btnCargarIndicadores.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                Stage stage = new Stage();
+                VentanaCargarIndicadores vci = new VentanaCargarIndicadores(primaryStage,elCore);
+                try {
+                    vci.start(stage);
+                }catch(Exception ex){}
+                primaryStage.hide();
+            }
+        });
+
+        btnConsultarIndicadores.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                Stage stage = new Stage();
+                VentanaConsultarIndicadores vci = new VentanaConsultarIndicadores(primaryStage,elCore);
+                try {
+                    vci.start(stage);
+                }catch(Exception ex){}
+                primaryStage.hide();
+            }
+        });
+
         btnCerrar.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 primaryStage.close();
@@ -82,7 +106,9 @@ public class VentanaMenuPrincipal extends Application{
 
         grid.add(btnCargaArchivo,3,3);
         grid.add(btnConsultasXPeriodoEmpresa,4,3);
-        grid.add(btnCerrar,5,3);
+        grid.add(btnCargarIndicadores,3,4);
+        grid.add(btnConsultarIndicadores,4,4);
+        grid.add(btnCerrar,5,5);
 
 
     }

@@ -4,17 +4,18 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.time.Year;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class VentanaConsulta extends Application {
+public class VentanaConsultarIndicadores extends Application {
 
     private Stage ventanaMenu;
     private Core elCore;
@@ -23,7 +24,7 @@ public class VentanaConsulta extends Application {
 
     ComboBox<String> cbEmpresas = new ComboBox<>();
 
-    ComboBox<String> cbCuentas = new ComboBox<>();
+    ComboBox<String> cbIndicadores = new ComboBox<>();
     ComboBox<String> cbPeriodo = new ComboBox<>();
 
 
@@ -34,9 +35,9 @@ public class VentanaConsulta extends Application {
 
     List<Empresa> listaEmpresas = new ArrayList<>();
     List<String> listaAnios = new ArrayList<>();
-    List<Cuenta> listaCuentas = new ArrayList<>();
+    List<Indicador> listaIndicadores = new ArrayList<>();
 
-    VentanaConsulta(Stage ventanaRecibida, Core miCore) {
+    VentanaConsultarIndicadores(Stage ventanaRecibida, Core miCore) {
         this.ventanaMenu = ventanaRecibida;
         this.elCore = miCore;
     }
@@ -55,9 +56,9 @@ public class VentanaConsulta extends Application {
         grid.setVgap(4);
         grid.setHgap(10);
         grid.setPadding(new Insets(5, 5, 5, 5));
-        cbCuentas.setDisable(true);
         cbPeriodo.setDisable(true);
         boton.setDisable(true);
+        listaIndicadores = elCore.fetchAllIndicadores();
         listaEmpresas = elCore.fetchAllEmpresas();
 
         window = primaryStage;
@@ -70,18 +71,21 @@ public class VentanaConsulta extends Application {
         cbPeriodo = new ComboBox<>();
         cbPeriodo.setPromptText("Periodos");
 
-        cbCuentas.setPromptText("Cuentas");
+        cbIndicadores.setPromptText("Indicadores");
 
 
         cbEmpresas.getItems().addAll(
                 listaEmpresas.stream().map(n -> n.getNombre()).collect(Collectors.toList())
         );
 
+        cbIndicadores.getItems().addAll(
+                listaIndicadores.stream().map(n -> n.getNombre()).collect(Collectors.toList())
+        );
+
         cbEmpresas.setOnAction(e -> {
             boton.setDisable(true);
             listaAnios = elCore.fetchAllAnios(obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0, cbPeriodo.getItems().size());
-            cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
             cbPeriodo.setDisable(false);
 
             cbPeriodo.getItems().addAll(
@@ -89,19 +93,11 @@ public class VentanaConsulta extends Application {
 
         });
 
-
-        cbPeriodo.setOnAction(e -> {
-                   listaCuentas = elCore.fetchAllCuentas(stringToInt(cbPeriodo.getValue()), obtenerEmpresa(cbEmpresas.getValue()));
-                    cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
-                    cbCuentas.getItems().addAll(
-                            listaCuentas.stream().map(n -> n.getNombre()).collect(Collectors.toList()));
-                    cbCuentas.setDisable(false);
-                }
+        cbIndicadores.setOnAction(e -> {
+            boton.setDisable(false);
+        });
 
 
-        );
-
-        cbCuentas.setOnAction(e -> boton.setDisable(false));
 
         grid.add(new Label("Empresa: "), 0, 0);
         grid.add(cbEmpresas, 1, 0);
@@ -110,7 +106,7 @@ public class VentanaConsulta extends Application {
         grid.add(cbPeriodo, 1, 1);
 
         grid.add(new Label("Cuenta: "), 0, 2);
-        grid.add(cbCuentas, 1, 2);
+        grid.add(cbIndicadores, 1, 2);
 
 
         grid.add(boton, 0, 4);
@@ -134,9 +130,8 @@ public class VentanaConsulta extends Application {
 
             lEmpresa.setText("Empresa: ");
             lNombreEmpresa.setText(cbEmpresas.getValue());
-            lCuentaEmpresa.setText(cbCuentas.getValue() + ":");
-            lValor.setText(String.valueOf(obtenerCuenta(listaCuentas, cbCuentas.getValue()).getValor()));
-
+            lCuentaEmpresa.setText(cbIndicadores.getValue() + ":");
+            lValor.setText(String.valueOf(elCore.calcularIndicador(cbEmpresas.getValue(),stringToInt(cbPeriodo.getValue()),obtenerIndicador(cbIndicadores.getValue()).getEcuacion())));
         });
 
         volver.setOnAction(new EventHandler<ActionEvent>() {
@@ -150,15 +145,16 @@ public class VentanaConsulta extends Application {
 
     }
 
-    Cuenta obtenerCuenta(List<Cuenta> cuentas, String nombre) {
-        Cuenta cuentaRetorno = new Cuenta(null, 0);
-        for (int i = 0; i < cuentas.size(); i++) {
-            if (cuentas.get(i).getNombre().equals(nombre)) {
+    Indicador obtenerIndicador(String nombre) {
+        List<Indicador> indicadores = elCore.fetchAllIndicadores();
+        Indicador indicadorRetorno = new Indicador(null, null);
+        for (int i = 0; i < indicadores.size(); i++) {
+            if (indicadores.get(i).getNombre().equals(nombre)) {
 
-                cuentaRetorno = cuentas.get(i);
+                indicadorRetorno = indicadores.get(i);
             }
         }
-        return cuentaRetorno;
+        return indicadorRetorno;
     }
 
     int stringToInt(String anio) {
