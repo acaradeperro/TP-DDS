@@ -6,6 +6,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class Periodo {
     private int anio = 0;
@@ -68,5 +71,12 @@ public class Periodo {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static HashSet<Integer> aniosSinRepetidos(Empresa empresa){
+        List<Integer> listaAnios = fetchAllAnios(empresa);
+        HashSet<Integer> sinRepetidos = new HashSet<Integer>();
+        sinRepetidos.addAll(listaAnios);
+        return sinRepetidos;
     }
 }

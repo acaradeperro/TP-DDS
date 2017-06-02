@@ -86,7 +86,7 @@ public class VentanaConsultarIndicadores extends Application {
 
         cbEmpresas.setOnAction(e -> {
             boton.setDisable(true);
-            listaAnios = Periodo.fetchAllAnios(obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
+            listaAnios = Periodo.aniosSinRepetidos(obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0, cbPeriodo.getItems().size());
             cbPeriodo.setDisable(false);
 

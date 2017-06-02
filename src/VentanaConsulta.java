@@ -81,7 +81,7 @@ public class VentanaConsulta extends Application {
 
         cbEmpresas.setOnAction(e -> {
             boton.setDisable(true);
-            listaAnios = Periodo.fetchAllAnios(EmpresaController.obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
+            listaAnios = Periodo.aniosSinRepetidos(EmpresaController.obtenerEmpresa(cbEmpresas.getValue())).stream().map(n -> n.toString()).collect(Collectors.toList());
             cbPeriodo.getItems().remove(0, cbPeriodo.getItems().size());
             cbCuentas.getItems().remove(0, cbCuentas.getItems().size());
             cbPeriodo.setDisable(false);

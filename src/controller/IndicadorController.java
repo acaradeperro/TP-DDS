@@ -1,22 +1,15 @@
 package controller;
 
+import exception.IndicadorException;
 import model.*;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.fathzer.soft.javaluator.DoubleEvaluator;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.PrintStream;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.List;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptEngine;
-
+import java.lang.System;
 /**
  * Created by Colo on 31/5/2017.
  */
@@ -32,7 +25,12 @@ public class IndicadorController {
         String ecuacionNumerica = "";
         String[] parts = ecuacion.split("[-+/*]");
         for(int i = 0; i < parts.length; i++){
-            ecuacionNumerica += traerNumeroParaIndicador(parts[i],nombreEmpresa, anio);
+            try {
+                ecuacionNumerica += traerNumeroParaIndicador(parts[i], nombreEmpresa, anio);
+            }
+            catch (IndicadorException e){
+                System.out.println(e.getMessage());
+            }
             index += parts[i].length();
             if( index < ecuacion.length()) {
                 ecuacionNumerica += ecuacion.charAt(index);
@@ -51,7 +49,7 @@ public class IndicadorController {
         return 0.0;
     }
 
-    static String traerNumeroParaIndicador(String valor, String nombreEmpresa, int anio) {
+    static String traerNumeroParaIndicador(String valor, String nombreEmpresa, int anio) throws IndicadorException{
         int cuenta = 0;
         if(isNumeric(valor)){
             return valor;
@@ -83,14 +81,18 @@ public class IndicadorController {
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
                     indicador = rs.getString("indicadores.ecuacion");
+                    return Double.toString(calcularIndicador(nombreEmpresa, anio, indicador));
                 }
+
             }
             catch (Exception e)
             {
                 System.err.println("Got an exception!");
                 System.err.println(e.getMessage());
             }
-            return Double.toString(calcularIndicador(nombreEmpresa, anio, indicador));
+            throw new IndicadorException("La cuenta o indicador " + valor + " no existe");
+
+
         }
 
     }
